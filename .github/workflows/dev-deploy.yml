@@ -19,5 +19,6 @@ jobs:
         run: |
           # Start or restart Vite dev server using PM2
           pm2 start npm --name "vite-dev" -- run dev || pm2 restart vite-dev
+          pm2 save
 
           
