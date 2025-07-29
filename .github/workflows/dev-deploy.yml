@@ -1,4 +1,4 @@
-name: Deploy Dev Server on EC2
+name: Deploy Dev on Self-hosted EC2
 
 on:
   push:
@@ -6,30 +6,22 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up SSH Agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.EC2_KEY }}
+      - name: Install dependencies
+        run: npm install
 
-      - name: Copy project files to EC2
+      - name: Start Vite Dev Server with PM2
         run: |
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app
+          # Start or restart Vite dev server using PM2
+          pm2 start npm --name "vite-dev" -- run dev || pm2 restart vite-dev
 
-      - name: SSH into EC2 and start Vite Dev Server with PM2
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/${{ secrets.EC2_USER }}/app
-            npm install
+          # Enable PM2 to auto-start on reboot
+          pm2 startup
 
-            # Start or restart Vite dev server using PM2
-            pm2 start npm --name "vite-dev" -- run dev || pm2 restart vite-dev
-
-            # Optional: Save process list for reboot persistence
-            pm2 save
-          EOF
+          # Save PM2 process list so it restores on reboot
+          pm2 save
