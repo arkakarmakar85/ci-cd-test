@@ -1,8 +1,16 @@
-- name: Install and Restart on EC2 with PM2
-  run: |
-    ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-      cd /home/${{ secrets.EC2_USER }}/app
-      npm install
-      pm2 start npm --name "vite-dev" -- run dev || pm2 restart vite-dev
-      pm2 save
-    EOF
+name: Deploy Dev on Self-hosted EC2
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm install
