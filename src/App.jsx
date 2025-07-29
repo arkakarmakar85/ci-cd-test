@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       
-      
+      <h1>This is a sample test for CI/CD in EC2</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
