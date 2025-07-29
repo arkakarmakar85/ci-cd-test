@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0', // Add this line to allow external access from your browser
+    port: '5173'
   },
 })
 
